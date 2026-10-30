@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="文章详情 · 清风个人页">
+  <title>文章 · 清风个人页</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070A0F'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%234FE3C1' font-family='sans-serif'%3E%E6%B8%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/scifi.css">
+  <script>/* 首屏前定主题，避免深色用户闪白 */
+  (function(){var m=localStorage.getItem("theme")||"dark";var d=m==="dark"||(m==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");})();
+  </script>
+</head>
+<body data-page="post">
+  <div class="read-progress" id="read-progress"></div>
+  <header class="site-header" id="site-header"></header>
+
+  <main class="container wide">
+    <div class="post-layout">
+      <article>
+        <header id="post-head"></header>
+        <div class="meta-line" style="margin:0.8rem 0 1.5rem" id="post-tags"></div>
+        <div id="post-body"></div>
+        <div class="pager" id="pager"></div>
+      </article>
+      <aside>
+        <nav class="toc" id="toc"></nav>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="data/site.js"></script>
+  <script src="data/posts.js"></script>
+  <script src="assets/md.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/fx.js"></script>
+</body>
+</html>

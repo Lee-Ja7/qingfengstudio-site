@@ -3,34 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qingfeng Studio</title>
-  <style>
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,sans-serif;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      background:#f5f5f7;
-      color:#111;
-    }
-    .card{
-      text-align:center;
-      padding:40px;
-      border-radius:24px;
-      background:white;
-      box-shadow:0 10px 30px rgba(0,0,0,.08);
-    }
-    h1{margin:0 0 12px;}
-    p{margin:6px 0;color:#666;}
-  </style>
+  <meta name="description" content="清风个人页 · 记录前端动效、静态站点与工具实践的个人技术博客。">
+  <title>清风个人页 · 清风绕竹，落月栖松</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070A0F'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%234FE3C1' font-family='sans-serif'%3E%E6%B8%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/scifi.css">
+  <script>/* 首屏前定主题，避免深色用户闪白 */
+  (function(){var m=localStorage.getItem("theme")||"dark";var d=m==="dark"||(m==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");})();
+  </script>
 </head>
-<body>
-  <div class="card">
-    <h1>Qingfeng Studio</h1>
-    <p>个人网站</p>
-    <p>网站部署测试成功...</p>
-  </div>
+<body data-page="home">
+  <header class="site-header" id="site-header"></header>
+
+  <main class="container wide">
+    <section class="hero">
+      <svg class="hero-mark" viewBox="0 0 620 130" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false">
+        <text x="620" y="104" text-anchor="end" fill="none" stroke="currentColor" stroke-width="1.2"
+              textLength="612" lengthAdjust="spacingAndGlyphs"
+              font-family="ui-monospace, 'SF Mono', Consolas, monospace" font-size="120" font-weight="700">QINGFENG</text>
+      </svg>
+      <div class="meta-line"><span class="index-chip">01</span><span>个人技术博客</span><span class="dot">/</span><span id="hero-year">2026</span><span class="status-dot">online</span></div>
+      <p class="motto">清风绕竹，落月栖松</p>
+      <h1 class="hero-title hero-title--fx">写代码，也写点别的</h1>
+      <p class="hero-intro">记录前端动效、静态站点与工具实践。这里放那些在别处放不下的笔记。</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="posts.html">全部文章</a>
+        <a class="btn" href="feed.xml">RSS 订阅</a>
+        <a class="btn" href="about.html">关于</a>
+      </div>
+      <div class="hero-stats">
+        <span><b id="stat-posts">03</b>篇文章</span>
+        <span><b id="stat-tags">09</b>个标签</span>
+        <span><b id="stat-since">2026</b>至今</span>
+        <span class="stat-note">handwritten · no build</span>
+      </div>
+    </section>
+
+    <div class="section-head"><span class="index-chip">精选</span><span>featured</span></div>
+    <div class="bento" id="featured"></div>
+
+    <div class="section-head"><span class="index-chip">全部</span><span><span id="post-count">0</span> articles</span></div>
+    <div class="post-grid" id="post-list"></div>
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="data/site.js"></script>
+  <script src="data/posts.js"></script>
+  <script src="assets/md.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/fx.js"></script>
 </body>
 </html>
