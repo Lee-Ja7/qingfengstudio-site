@@ -64,7 +64,7 @@
       var cells = r.split("|").map(function (c) { return c.trim(); }).filter(function (c, i, a) { return !(i === 0 && c === "") && !(i === a.length - 1 && c === ""); });
       return "<tr>" + cells.map(function (c) { return "<td>" + inline(c) + "</td>"; }).join("") + "</tr>";
     }).join("");
-    return "<table><thead><tr>" + head.map(function (c) { return "<th>" + inline(c) + "</th>"; }).join("") + "</tr></thead><tbody>" + body + "</tbody></table>";
+    return '<div class="table-wrap"><table><thead><tr>' + head.map(function (c) { return "<th>" + inline(c) + "</th>"; }).join("") + "</tr></thead><tbody>" + body + "</tbody></table></div>";
   }
 
   function isTableSep(l) { return /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(l) && l.indexOf("-") > -1; }

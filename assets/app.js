@@ -109,15 +109,17 @@
       e.style.transitionDelay = (i % 8) * 40 + "ms";
       io.observe(e);
     });
-    /* 兜底：视口内的元素若因时序没被点亮，1.2s 后强制显示，避免正文大段空白 */
-    setTimeout(function () {
+    /* 兜底：视口内的元素若因时序没被点亮，连续巡检几次后强制显示，避免正文空白 */
+    var ticks = 0;
+    var guard = setInterval(function () {
       var vh = window.innerHeight;
       els.forEach(function (e) {
         if (e.classList.contains("in-view")) return;
         var r = e.getBoundingClientRect();
         if (r.top < vh && r.bottom > 0) e.classList.add("in-view");
       });
-    }, 1200);
+      if (++ticks >= 5) clearInterval(guard);
+    }, 700);
   }
 
   /* Hero 逐字浮现（文章页标题用；首页大标题走 .hero-title--fx 的聚光渐变） */
@@ -356,7 +358,24 @@
       h.id = h.id || ("s" + i);
       items.push('<a href="#' + h.id + '" class="lvl-' + h.tagName.toLowerCase().replace("h", "") + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a>");
     });
-    toc.innerHTML = '<div class="toc-title">目录</div>' + items.join("");
+    toc.innerHTML = '<button class="toc-toggle" type="button" aria-expanded="false">目录' +
+      '<span class="toc-count">' + hs.length + "</span></button>" +
+      '<div class="toc-title">目录</div>' + items.join("");
+
+    var toggle = toc.querySelector(".toc-toggle");
+    if (toggle) {
+      toggle.addEventListener("click", function () {
+        var open = toc.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      /* 手机上点完锚点自动收起 */
+      toc.addEventListener("click", function (e) {
+        if (e.target.tagName === "A" && window.innerWidth <= 900) {
+          toc.classList.remove("open");
+          toggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
 
     var links = toc.querySelectorAll("a");
     var map = {};

@@ -576,12 +576,15 @@ a.tag:hover { background: var(--accent); color: var(--accent-ink); text-decorati
 .btn:active { transform: scale(0.97); }
 
 /* ---------------- 入场动画 ---------------- */
+/* 只动 opacity：位移交给 .list-enter / fx 层，避免 transform 与 hover 打架 */
 .reveal {
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s var(--ease-in), transform 0.5s var(--ease-in);
+  transition: opacity 0.55s var(--ease-in);
 }
-.reveal.in-view { opacity: 1; transform: none; }
+.reveal.in-view { opacity: 1; }
+/* CSS 兜底：2s 后无论 JS/IO 是否触发，内容都要能看见 */
+@keyframes revealSafe { to { opacity: 1; } }
+.reveal { animation: revealSafe 1ms linear 1800ms forwards; }
 
 /* ---------------- 响应式 ---------------- */
 @media (max-width: 900px) {

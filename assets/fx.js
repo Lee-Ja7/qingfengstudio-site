@@ -230,11 +230,13 @@
 
       e.preventDefault();
       card.classList.add("is-launch");
+      var lead = isTouch() ? 40 : 70;
+      var push = isTouch() ? 170 : 330;
       setTimeout(function () {
         document.documentElement.classList.remove("fx-enter");
         document.documentElement.classList.add("fx-push");
-        setTimeout(function () { location.href = link.href; }, 330);
-      }, 70);
+        setTimeout(function () { location.href = link.href; }, push);
+      }, lead);
     }, true);
   }
 
@@ -247,13 +249,33 @@
     }, 700);
   }
 
+  /* ---------------- 内页水印：QINGFENG + 签名 ---------------- */
+  var BRAND_SVG =
+    '<svg class="hero-mark" viewBox="0 0 620 130" preserveAspectRatio="xMaxYMid meet" focusable="false">' +
+    '<text x="620" y="104" text-anchor="end" fill="none" stroke="currentColor" stroke-width="1.2"' +
+    ' textLength="612" lengthAdjust="spacingAndGlyphs"' +
+    ' font-family="ui-monospace, \'SF Mono\', Consolas, monospace" font-size="120" font-weight="700">QINGFENG</text></svg>';
+
+  function initPageBrand() {
+    if (document.querySelector(".page-brand")) return;
+    if (document.body.getAttribute("data-page") === "home") return;
+    var el = document.createElement("div");
+    el.className = "page-brand";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = BRAND_SVG +
+      '<img class="hero-sign" src="assets/signature.png" alt="" width="600" height="281">';
+    document.body.appendChild(el);
+  }
+
   /* ---------------- 启动 ---------------- */
   function boot() {
     var bg = buildBg();
-    if (bg && motionOK()) {
+    /* 触摸设备没有 mousemove：网格 canvas 与聚光都不必启动，省一层合成 */
+    if (bg && motionOK() && !isTouch()) {
       initMesh(bg);
       initSpot(bg);
     }
+    initPageBrand();
     initTilt();
     initSpatial();
     initEnter();
