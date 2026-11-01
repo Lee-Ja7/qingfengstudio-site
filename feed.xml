@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>清风个人页</title>
+    <link>https://qingfengstudio.cn/</link>
+    <description>记录前端动效、静态站点与工具实践的个人技术博客。</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Sat, 24 Oct 2026 00:00:00 +0800</lastBuildDate>
+    <item>
+      <title>只动 transform 和 opacity：让 CSS 动效稳定 60 帧的清单</title>
+      <link>https://qingfengstudio.cn/post.html?slug=css-motion-60fps</link>
+      <guid>https://qingfengstudio.cn/post.html?slug=css-motion-60fps</guid>
+      <pubDate>Sat, 24 Oct 2026 00:00:00 +0800</pubDate>
+      <description>掉帧的元凶大多不是显卡，是浏览器在替你回炉重算布局。这份清单把「只动 transform 和 opacity」落成可勾选的条目。</description>
+    </item>
+    <item>
+      <title>不装构建工具的静态博客：file:// 双击也能跑的多页面架构</title>
+      <link>https://qingfengstudio.cn/post.html?slug=no-build-static-blog</link>
+      <guid>https://qingfengstudio.cn/post.html?slug=no-build-static-blog</guid>
+      <pubDate>Sun, 18 Oct 2026 00:00:00 +0800</pubDate>
+      <description>这个博客本身没有 package.json。文章存 JSON、页面直接读、双击就能打开，我把这套「零构建多页」的取舍记在这里。</description>
+    </item>
+    <item>
+      <title>67 个工具塞进一个 HTML：单文件工具箱的取舍</title>
+      <link>https://qingfengstudio.cn/post.html?slug=single-file-toolkit</link>
+      <guid>https://qingfengstudio.cn/post.html?slug=single-file-toolkit</guid>
+      <pubDate>Fri, 09 Oct 2026 00:00:00 +0800</pubDate>
+      <description>把 8 类 67 个工具塞进一个 HTML 文件，双击即用、离线可用。记录这次「体积与功能」拉锯里的每个决定。</description>
+    </item>
+  </channel>
+</rss>
