@@ -1,0 +1,584 @@
+/* ============================================================
+   深空终端 · 视觉层 v1
+   跟随鼠标：聚光 + 网格错位；卡片：玻璃 + 渐变描边 + 弹性倾斜
+   全部零依赖，可 file:// 直接打开
+   ============================================================ */
+
+/* ---------------- 1. 背景层 ---------------- */
+.fx-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+/* 极光：大模糊光团缓慢漂移 */
+.fx-aurora {
+  position: absolute;
+  inset: -22%;
+  background:
+    radial-gradient(30rem 26rem at 16% 14%, var(--glow-a), transparent 60%),
+    radial-gradient(28rem 24rem at 84% 62%, var(--glow-b), transparent 62%),
+    radial-gradient(20rem 16rem at 66% 2%, rgba(255, 92, 138, .10), transparent 64%);
+  filter: blur(18px);
+  will-change: transform;
+  animation: auroraDrift 36s ease-in-out infinite alternate;
+}
+@keyframes auroraDrift {
+  from { transform: translate3d(-2%, -1.5%, 0) scale(1); }
+  to   { transform: translate3d(3%, 2%, 0) scale(1.14); }
+}
+
+/* 第二层极光：反向漂移 + 呼吸，让背景自己会动 */
+.fx-aurora--b {
+  background:
+    radial-gradient(26rem 22rem at 78% 16%, rgba(124, 107, 255, .17), transparent 62%),
+    radial-gradient(30rem 24rem at 20% 80%, rgba(79, 227, 193, .11), transparent 64%);
+  animation:
+    auroraDrift 46s ease-in-out infinite alternate-reverse,
+    auroraBreathe 19s ease-in-out infinite;
+}
+@keyframes auroraBreathe {
+  0%, 100% { opacity: .32; }
+  50% { opacity: .9; }
+}
+[data-theme="light"] .fx-aurora--b {
+  background:
+    radial-gradient(26rem 22rem at 78% 16%, rgba(91, 75, 196, .05), transparent 62%),
+    radial-gradient(30rem 24rem at 20% 80%, rgba(30, 95, 82, .05), transparent 64%);
+}
+
+/* 中央光核：给玻璃卡片一点可模糊的东西 */
+.fx-core {
+  position: absolute;
+  left: 50%;
+  top: 6rem;
+  width: 46rem;
+  height: 26rem;
+  margin-left: -23rem;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+  filter: blur(30px);
+  opacity: .9;
+}
+
+/* 静态网格：只负责"远处"，鼠标附近交给 canvas */
+.fx-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(79, 227, 193, .085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(79, 227, 193, .085) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(130% 95% at 50% 0%, #000 20%, transparent 78%);
+  mask-image: radial-gradient(130% 95% at 50% 0%, #000 20%, transparent 78%);
+  opacity: .55;
+}
+[data-theme="light"] .fx-grid {
+  background-image:
+    linear-gradient(to right, rgba(28, 31, 27, .055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(28, 31, 27, .055) 1px, transparent 1px);
+}
+[data-theme="light"] .fx-core { display: none; }
+
+/* 错位网格画布 */
+#fx-mesh {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .9;
+}
+
+/* 聚光光斑：用 transform 移动，走合成层 */
+.fx-spot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 42rem;
+  height: 42rem;
+  margin: -21rem 0 0 -21rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    rgba(79, 227, 193, .19),
+    rgba(79, 227, 193, .07) 42%,
+    transparent 70%);
+  mix-blend-mode: screen;
+  transform: translate3d(-120vw, -120vh, 0);
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 700ms var(--ease);
+}
+.fx-on .fx-spot { opacity: 1; }
+
+/* 极细扫描线，只加质感不抢戏 */
+.fx-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom,
+    rgba(255, 255, 255, .022) 0 1px,
+    transparent 1px 4px);
+  mix-blend-mode: overlay;
+  opacity: .5;
+}
+
+/* 浅色下整体降噪：极光收敛、扫描线关掉 */
+[data-theme="light"] .fx-scan { display: none; }
+[data-theme="light"] .fx-spot { mix-blend-mode: multiply; opacity: 0; }
+[data-theme="light"] .fx-on .fx-spot { opacity: .55; }
+[data-theme="light"] .fx-grid { opacity: .5; }
+
+/* ---------------- 2. 顶栏玻璃化 ---------------- */
+.site-header {
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid var(--rule);
+}
+.brand .brand-name {
+  letter-spacing: .14em;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+/* 浅色下光晕会糊字，改用纯色描边强化 */
+[data-theme="light"] .site-header { background: color-mix(in srgb, var(--paper) 88%, transparent); }
+[data-theme="light"] .brand .brand-name { text-shadow: none; }
+[data-theme="light"] .site-nav a { color: var(--ink); }
+[data-theme="light"] .site-nav a:not(.active) { color: var(--muted); }
+
+/* ---------------- 3. 卡片：玻璃 + 渐变描边 ---------------- */
+.card {
+  position: relative;
+  border-radius: 14px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02) 58%),
+    var(--glass);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+[data-theme="light"] .card {
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .82), rgba(255, 255, 255, .42) 58%),
+    var(--glass);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+
+/* 渐变描边：用 mask 只留 1px 边框，hover 才亮 */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(79, 227, 193, .9),
+    rgba(124, 107, 255, .55) 42%,
+    transparent 68%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: .28;
+  transition: opacity 320ms var(--ease);
+  pointer-events: none;
+}
+.card:hover::before { opacity: 1; }
+
+/* hover 时整块浮起 + 磷光外溢（柔光走 box-shadow，::after 留给卡片箭头） */
+.card:hover {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--glass-line));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .07),
+    0 26px 64px -34px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* ---------------- 4. 弹性倾斜（变量驱动，JS 只写变量） ---------------- */
+.card {
+  transform:
+    perspective(900px)
+    rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg))
+    translateY(var(--ty, 0px))
+    scale(var(--sc, 1));
+  transition:
+    transform 460ms var(--ease-spring),
+    border-color 240ms var(--ease),
+    box-shadow 320ms var(--ease);
+  will-change: transform;
+}
+.card.is-tilting {
+  transition: transform 90ms linear, border-color 240ms var(--ease), box-shadow 320ms var(--ease);
+}
+
+/* ---------------- 5. Bento 大卡片网格 ---------------- */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(8.2rem, auto);
+  gap: .85rem;
+  align-items: stretch;
+}
+.bento > .card { margin-bottom: 0; }
+
+.bento .b-lg {
+  grid-column: span 2;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  padding: 1.7rem 1.8rem;
+  min-height: 0;
+}
+.bento .b-lg .title {
+  font-size: 1.5rem;
+  line-height: 1.35;
+  letter-spacing: -.02em;
+  margin: .5rem 0 .7rem;
+}
+.bento .b-lg .summary {
+  font-size: .95rem;
+  max-width: 34rem;
+}
+.bento .b-sm {
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 7.6rem;
+}
+.bento .b-sm .title { font-size: .98rem; line-height: 1.5; margin: .35rem 0 0; }
+
+.b-lg .card-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  flex-wrap: wrap;
+}
+.read-more {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  letter-spacing: .1em;
+  color: var(--accent);
+  transition: transform 280ms var(--ease-spring);
+}
+.post-card:hover .read-more { transform: translateX(5px); }
+.bento .kicker {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .18em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+/* 内页页头：与首页 Hero 拉开层次，但不到 Hero 的量级 */
+.container > h1 {
+  font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+  letter-spacing: -.03em;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+}
+
+/* 文章列表：两列玻璃卡 */
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+}
+.post-grid .post-card { margin-bottom: 0; height: 100%; }
+
+/* Bento 里的功能卡（关于 / 联系） */
+.b-link .title { font-size: 1rem; margin: .4rem 0 .2rem; }
+.b-link .summary { font-size: .84rem; color: var(--muted); }
+
+/* 深底上日期/元信息提亮一档，保证可读 */
+.post-card .date { color: var(--muted); }
+[data-theme="light"] .post-card .date { color: var(--faint); }
+
+@media (max-width: 760px) {
+  .post-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------------- 6. Hero ---------------- */
+:root { --wide-w: 68rem; }
+.hero { margin: 3rem 0 2.6rem; position: relative; }
+
+/* 背景描边水印：用 SVG 画，避免超大字 text-stroke 拖垮整页光栅化 */
+.hero-mark {
+  position: absolute;
+  right: -1rem;
+  top: 54%;
+  transform: translateY(-50%);
+  width: min(52rem, 80%);
+  height: auto;
+  color: rgba(255, 255, 255, .05);
+  pointer-events: none;
+  z-index: -1;
+}
+[data-theme="light"] .hero-mark { color: rgba(28, 31, 27, .075); }
+/* 首页大标题专用字号；文章页 h1 仍走原 1.9rem，避免正文标题过大 */
+.hero-title { font-size: clamp(1.9rem, 3.2vw, 2.4rem); }
+
+/* 聚光大字：渐变随鼠标横向扫过 */
+.hero-title--fx {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  font-weight: 600;
+  margin: .7rem 0 1rem;
+  background-image: linear-gradient(100deg,
+    #C9D3E2 0%, #FFFFFF 26%, #FFFFFF 41%, var(--accent) 50%, #FFFFFF 59%, #FFFFFF 74%, #C9D3E2 100%);
+  background-size: 220% 100%;
+  background-position: var(--gx, 50%) 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  clip-path: inset(0 100% 0 0);
+  animation: heroReveal 900ms var(--ease-in) 100ms forwards;
+  transition: background-position 260ms var(--ease);
+}
+@keyframes heroReveal { to { clip-path: inset(0 0 0 0); } }
+
+[data-theme="light"] .hero-title--fx {
+  background-image: linear-gradient(100deg,
+    #8A8F86 0%, #1C1F1B 34%, #1E5F52 48%, #1C1F1B 62%, #8A8F86 100%);
+}
+
+.hero .motto {
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  letter-spacing: .3em;
+  color: var(--faint);
+  margin: 0 0 1.1rem;
+}
+
+/* Hero 下的行动按钮 */
+.hero-actions {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin-top: 1.4rem;
+}
+
+/* HUD 状态行：让页面看起来"在运行" */
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-left: .4rem;
+}
+.status-dot::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulseDot 2.6s ease-in-out infinite;
+}
+@keyframes pulseDot { 50% { opacity: .3; } }
+
+.hero-stats {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.9rem;
+  padding-left: .9rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  color: var(--faint);
+}
+.hero-stats::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .15em;
+  bottom: .15em;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+.hero-stats b {
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--accent);
+  margin-right: .28rem;
+  letter-spacing: 0;
+}
+.hero-stats .stat-note { margin-left: auto; opacity: .65; }
+.btn-solid {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  box-shadow: 0 8px 28px -14px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+.btn-solid:hover { background: var(--accent); color: var(--accent-ink); filter: brightness(1.08); }
+
+/* ---------------- 7. 编号与节标题 ---------------- */
+:root { --radius: 10px; }
+[data-theme="light"] { --radius: 4px; }
+.tag, .index-chip, .code-block, .search-input, .theme-toggle, .pager a, .to-top {
+  border-radius: var(--radius);
+}
+
+.search-input {
+  background: rgba(255, 255, 255, .035);
+  border: 1px solid var(--glass-line);
+  padding: .6rem .9rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+[data-theme="light"] .search-input { background: rgba(255, 255, 255, .72); }
+.search-input:focus,
+.search-input:focus-visible {
+  background: rgba(255, 255, 255, .06);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+[data-theme="light"] .search-input:focus,
+[data-theme="light"] .search-input:focus-visible {
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin: 2.4rem 0 .9rem;
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  letter-spacing: .16em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+.section-head::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(to right,
+    color-mix(in srgb, var(--accent) 55%, transparent) 0 5px,
+    transparent 5px 11px);
+  opacity: .7;
+}
+
+/* ---------------- 8. 正文可读性（深底） ---------------- */
+/* 文章标题整块入场：不做逐字拆分，避免 file:// 这类词被拆断行 */
+#post-title {
+  animation: postTitleIn 560ms var(--ease-in) both;
+  text-wrap: balance;
+}
+@keyframes postTitleIn {
+  from { opacity: 0; transform: translateY(10px); }
+}
+#post-head .hero-intro { animation: postTitleIn 620ms var(--ease-in) 80ms both; }
+
+.post-layout {
+  grid-template-columns: minmax(0, 1fr) 12rem;
+  gap: 3rem;
+  max-width: 54rem;
+  margin: 0 auto;
+}
+.hero-title, .hero-title--fx { text-wrap: balance; }
+.article-body { max-width: none; }
+.article-body p,
+.article-body li { color: #C7D1E0; }
+.article-body strong { color: var(--ink); }
+.article-body th { background: rgba(255, 255, 255, .045); }
+.article-body td, .article-body th { border-color: var(--rule-strong); }
+.article-body p code,
+.article-body li code { background: rgba(255, 255, 255, .07); color: #C7D1E0; }
+.article-body blockquote { color: #B9C4D4; }
+
+[data-theme="light"] .article-body p,
+[data-theme="light"] .article-body li { color: var(--ink); }
+[data-theme="light"] .article-body th { background: var(--code-bg); }
+[data-theme="light"] .article-body p code,
+[data-theme="light"] .article-body li code { background: var(--code-bg); color: var(--ink); }
+[data-theme="light"] .article-body blockquote { color: var(--muted); }
+
+/* ---------------- 9. 空间转场（点击卡片） ---------------- */
+.fx-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 880;
+  background: radial-gradient(120% 90% at 50% 50%, rgba(5, 7, 10, .5), rgba(5, 7, 10, .92));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 380ms var(--ease);
+}
+
+/* 卡片被点亮：先推近，再整页推入 */
+.card.is-launch {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
+    0 24px 60px -28px color-mix(in srgb, var(--accent) 70%, transparent);
+  --sc: 1.015;
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), border-color 200ms;
+}
+
+html.fx-push .container {
+  transform: perspective(1200px) translate3d(0, 0, 140px) scale(1.03);
+  opacity: 0;
+  transition: transform 460ms var(--ease), opacity 380ms var(--ease);
+}
+html.fx-push .site-header,
+html.fx-push .site-footer {
+  opacity: 0;
+  transition: opacity 300ms var(--ease);
+}
+html.fx-push .fx-mask { opacity: 1; }
+
+/* 页面进入：轻微推近后落定 */
+html.fx-enter .container {
+  animation: fxEnter 560ms var(--ease-in) both;
+}
+@keyframes fxEnter {
+  from { opacity: 0; transform: perspective(1200px) translate3d(0, 0, -60px) scale(.995); }
+}
+/* 旧的入场兜底让位给 fxEnter，避免移除类时二次播放 */
+html.no-vt .container { animation: none; }
+
+/* ---------------- 9. 响应式 ---------------- */
+@media (max-width: 900px) {
+  .post-layout { grid-template-columns: 1fr; gap: 1.5rem; max-width: none; }
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bento .b-lg { grid-column: span 2; grid-row: auto; min-height: 0; }
+  .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+  .card { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+}
+@media (max-width: 560px) {
+  .bento { grid-template-columns: 1fr; grid-auto-rows: auto; }
+  .bento .b-lg, .bento .b-sm { grid-column: auto; }
+  .hero { margin-top: 2rem; }
+  .hero-stats { gap: 1rem 1.2rem; font-size: .68rem; }
+  .hero-stats .stat-note { width: 100%; margin-left: 0; }
+}
+
+/* ---------------- 10. 降级 ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .fx-aurora { animation: none; }
+  .hero-title--fx { clip-path: none; animation: none; }
+  .card { transform: none; }
+  html.fx-enter .container { animation: none; }
+  html.fx-push .container { transform: none; opacity: 1; }
+}
+
+/* 无 backdrop-filter 支持时退回实心面板 */
+@supports not (backdrop-filter: blur(4px)) {
+  .card { background: var(--surface); }
+  .site-header { background: var(--paper); }
+}
