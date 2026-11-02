@@ -141,6 +141,16 @@
   letter-spacing: .14em;
   text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
 }
+/* 品牌图标：透明底笔迹，深色用白线、浅色用墨线（favicon 另用白色方块版） */
+.brand { align-items: center; }
+.brand-logo {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: block;
+  background: url(logo-mark.png) center / contain no-repeat;
+}
+[data-theme="light"] .brand-logo { background-image: url(logo-mark-ink.png); }
 /* 浅色下光晕会糊字，改用纯色描边强化 */
 [data-theme="light"] .site-header { background: color-mix(in srgb, var(--paper) 88%, transparent); }
 [data-theme="light"] .brand .brand-name { text-shadow: none; }
@@ -693,6 +703,8 @@ body {
 }
 
 @media (max-width: 640px) {
+  /* 手机宽度只留 logo + 站名，副标题让位给主题按钮 */
+  .brand-slash, .brand-sub { display: none; }
   .bento { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .bento .b-lg, .bento .b-sm { grid-column: auto; }
   .bento .b-lg { padding: 1.35rem 1.25rem; }
@@ -751,7 +763,124 @@ body {
   .site-header { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 }
 
-/* ---------------- 11. 降级 ---------------- */
+/* ---------------- 11. 项目页 ---------------- */
+.page-lead {
+  color: var(--muted);
+  max-width: 42rem;
+  margin: .2rem 0 2rem;
+  font-size: .95rem;
+}
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .85rem;
+}
+.proj-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.25rem;
+  min-height: 13.5rem;
+}
+.proj-top {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .85rem;
+}
+.proj-idx {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .12em;
+  color: var(--accent);
+}
+.proj-status {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: .1em;
+  padding: .08rem .5rem;
+  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.proj-status.is-live {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.proj-title {
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin: 0 0 .55rem;
+  line-height: 1.4;
+}
+.proj-desc {
+  font-size: .9rem;
+  color: var(--muted);
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+.proj-meta {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--muted);
+}
+.proj-foot {
+  margin-top: auto;
+  padding-top: .85rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: .74rem;
+}
+.proj-foot a { color: var(--accent); }
+.proj-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+}
+.proj-links a {
+  transition: color 180ms var(--ease), transform 180ms var(--ease);
+  white-space: nowrap;
+}
+@media (hover: hover) {
+  .proj-links a:hover { transform: translateY(-1px); text-decoration: underline; }
+}
+
+/* 统一占位标记：虚线 + 弱色，一眼能看出是待填 */
+.ph {
+  color: var(--faint);
+  border-bottom: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.proj-card.is-empty {
+  border-style: dashed;
+  border-color: var(--rule-strong);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.proj-card.is-empty .proj-title { font-weight: 500; }
+.proj-card.is-empty .proj-status { opacity: .7; }
+.proj-card.is-empty:hover { transform: none; border-color: var(--rule-strong); box-shadow: none; }
+.proj-card.is-empty:hover::before { opacity: .18; }
+
+@media (max-width: 1100px) {
+  .proj-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .proj-grid { grid-template-columns: 1fr; }
+  .proj-card { min-height: 0; padding: 1.05rem 1.15rem; }
+}
+
+/* ---------------- 12. 降级 ---------------- */
 @media (prefers-reduced-motion: reduce) {
   .fx-aurora { animation: none; }
   .hero-title--fx { clip-path: none; animation: none; }

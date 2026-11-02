@@ -75,7 +75,9 @@
     }).join("");
     host.innerHTML =
       '<div class="header-inner">' +
-      '<a class="brand" href="index.html"><span class="brand-name">' + esc(S.en.toUpperCase()) + '</span>' +
+      '<a class="brand" href="index.html">' +
+      '<span class="brand-logo" aria-hidden="true"></span>' +
+      '<span class="brand-name">' + esc(S.en.toUpperCase()) + '</span>' +
       '<span class="brand-slash">/</span><span class="brand-sub">' + esc(S.name) + "</span></a>" +
       '<nav class="site-nav">' + nav + "</nav>" +
       '<button class="theme-toggle" id="theme-toggle" type="button" title="切换主题">◐</button>' +

@@ -25,6 +25,7 @@ window.SITE = {
   nav: [
     { label: "首页", href: "index.html" },
     { label: "文章", href: "posts.html" },
+    { label: "项目", href: "projects.html" },
     { label: "关于", href: "about.html" },
     { label: "友链", href: "links.html" },
     { label: "联系", href: "contact.html" }

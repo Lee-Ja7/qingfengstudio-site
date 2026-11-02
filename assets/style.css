@@ -75,7 +75,13 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+/* 隐藏根滚动条：短页面切换时内容宽度不再变化，避免整页左右跳动 */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 body {
   margin: 0;

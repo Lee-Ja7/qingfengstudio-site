@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="我的项目 · 做过的东西，和没做完的东西。">
+  <title>项目 · 清风个人页</title>
+  <link rel="icon" type="image/png" href="assets/app-icon.png">
+  <link rel="apple-touch-icon" href="assets/app-icon.png">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/scifi.css">
+  <script>/* 首屏前定主题，避免深色用户闪白 */
+  (function(){var m=localStorage.getItem("theme")||"dark";var d=m==="dark"||(m==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");})();
+  </script>
+</head>
+<body data-page="projects">
+  <header class="site-header" id="site-header"></header>
+
+  <main class="container wide">
+    <div class="meta-line" style="margin-bottom:0.4rem"><span class="index-chip">03</span><span>projects</span></div>
+    <h1>我的项目</h1>
+    <p class="page-lead">这里收录做过的项目，和一些还没做完的想法。</p>
+
+    <!-- ============================================================
+         项目网格
+         每个卡片结构一致：编号 / 状态 / 名称 / 简介 / 元信息 / 底部链接
+         待填字段一律用 <span class="ph">占位文字</span> 标记，改的时候直接
+         替换标签内的文字即可；占位卡片去掉 .is-empty 就变成正式卡片。
+         ============================================================ -->
+    <div class="proj-grid">
+
+      <!-- ---------- 01 · 重科小助手 App ---------- -->
+      <article class="card proj-card">
+        <div class="proj-top">
+          <span class="proj-idx">01</span>
+          <span class="proj-status is-live">进行中</span>
+        </div>
+        <h3 class="proj-title">重科小助手 App</h3>
+        <p class="proj-desc">一站式解决校园同学的日常问题。</p>
+        <ul class="proj-meta">
+          <li>Kotlin</li>
+          <li>Android</li>
+          <li>2026.09 起</li>
+        </ul>
+        <div class="proj-foot proj-links">
+          <a href="https://ea.qingfengstudio.cn" target="_blank" rel="noopener">官网 ↗</a>
+          <a href="https://github.com/Lee-Ja7/ExpressAssistant_ii" target="_blank" rel="noopener">仓库 ↗</a>
+          <a href="https://gitee.com/qingfeng_studio/ExpressAssistant_ii/releases/download/v2.0.13/app-release.apk" target="_blank" rel="noopener">下载 ↗</a>
+        </div>
+      </article>
+
+      <!-- ---------- 02 · 重科摇摇乐 ---------- -->
+      <article class="card proj-card">
+        <div class="proj-top">
+          <span class="proj-idx">02</span>
+          <span class="proj-status is-live">已上线</span>
+        </div>
+        <h3 class="proj-title">重科摇摇乐</h3>
+        <p class="proj-desc">随机摇出和园、容园、校外的美食与娱乐去处，专治选择困难。</p>
+        <ul class="proj-meta">
+          <li>Web</li>
+          <li>随机抽取</li>
+        </ul>
+        <div class="proj-foot proj-links">
+          <a href="https://choice.qingfengstudio.cn" target="_blank" rel="noopener">访问 ↗</a>
+        </div>
+      </article>
+
+      <!-- ---------- 03 · 小工具合集 ---------- -->
+      <article class="card proj-card">
+        <div class="proj-top">
+          <span class="proj-idx">03</span>
+          <span class="proj-status is-live">已上线</span>
+        </div>
+        <h3 class="proj-title">小工具合集</h3>
+        <p class="proj-desc">常用小工具收在一处，要用了直接打开，省得东找西找。</p>
+        <ul class="proj-meta">
+          <li>Web</li>
+          <li>即开即用</li>
+        </ul>
+        <div class="proj-foot proj-links">
+          <a href="https://kit.qingfengstudio.cn" target="_blank" rel="noopener">访问 ↗</a>
+        </div>
+      </article>
+
+      <!-- ---------- 04 · 占位 ---------- -->
+      <article class="card proj-card is-empty">
+        <div class="proj-top">
+          <span class="proj-idx">04</span>
+          <span class="proj-status">状态</span>
+        </div>
+        <h3 class="proj-title"><span class="ph">项目名称</span></h3>
+        <p class="proj-desc"><span class="ph">一句话说明它解决什么问题</span></p>
+        <ul class="proj-meta">
+          <li><span class="ph">技术栈</span></li>
+          <li><span class="ph">时间</span></li>
+        </ul>
+        <div class="proj-foot">
+          <span class="ph">仓库 / 链接</span>
+        </div>
+      </article>
+
+      <!-- ---------- 05 · 占位 ---------- -->
+      <article class="card proj-card is-empty">
+        <div class="proj-top">
+          <span class="proj-idx">05</span>
+          <span class="proj-status">状态</span>
+        </div>
+        <h3 class="proj-title"><span class="ph">项目名称</span></h3>
+        <p class="proj-desc"><span class="ph">一句话说明它解决什么问题</span></p>
+        <ul class="proj-meta">
+          <li><span class="ph">技术栈</span></li>
+          <li><span class="ph">时间</span></li>
+        </ul>
+        <div class="proj-foot">
+          <span class="ph">仓库 / 链接</span>
+        </div>
+      </article>
+
+      <!-- ---------- 06 · 占位 ---------- -->
+      <article class="card proj-card is-empty">
+        <div class="proj-top">
+          <span class="proj-idx">06</span>
+          <span class="proj-status">状态</span>
+        </div>
+        <h3 class="proj-title"><span class="ph">项目名称</span></h3>
+        <p class="proj-desc"><span class="ph">一句话说明它解决什么问题</span></p>
+        <ul class="proj-meta">
+          <li><span class="ph">技术栈</span></li>
+          <li><span class="ph">时间</span></li>
+        </ul>
+        <div class="proj-foot">
+          <span class="ph">仓库 / 链接</span>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- 需要更多项目时，复制上面任意一个 .proj-card 区块，改编号即可 -->
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="data/site.js"></script>
+  <script src="data/posts.js"></script>
+  <script src="assets/md.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/fx.js"></script>
+</body>
+</html>
